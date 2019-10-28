@@ -120,41 +120,39 @@ class target():
 		self.points+=points
 		canv.itemconfig(self.id_points, text=self.points)
 
-t1 = target()
-screen1 = canv.create_text(400, 300, text='', font='28')
-g1 = gun()
-bullet = 0
-balls = []
-
+t1=target()
+screen1=canv.create_text(400, 300, text='', font='28')
+g1=gun()
+bullet=0
+balls=[]
 
 def new_game(event=''):
-    global gun, t1, screen1, balls, bullet
-    t1.new_target()
-    bullet = 0
-    balls = []
-    canv.bind('<Button-1>', g1.fire2_start)
-    canv.bind('<ButtonRelease-1>', g1.fire2_end)
-    canv.bind('<Motion>', g1.targetting)
+	global gun, t1, screen1, balls, bullet
+	t1.new_target()
+	bullet=0
+	balls = []
+	canv.bind('<Button-1>', g1.fire2_start)
+	canv.bind('<ButtonRelease-1>', g1.fire2_end)
+	canv.bind('<Motion>', g1.targetting)
 
-    z = 0.03
-    t1.live = 1
-    while t1.live or balls:
-        for b in balls:
-            b.move()
-            if b.hittest(t1) and t1.live:
-                t1.live = 0
-                t1.hit()
-                canv.bind('<Button-1>', '')
-                canv.bind('<ButtonRelease-1>', '')
-                canv.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрелов')
-        canv.update()
-        time.sleep(0.03)
-        g1.targetting()
-        g1.power_up()
-    canv.itemconfig(screen1, text='')
-    canv.delete(gun)
-    root.after(750, new_game)
-
+	z=0.03
+	t1.live=1
+	while t1.live or balls:
+		for b in balls:
+			b.move()
+			if b.hittest(t1) and t1.live:
+				t1.live = 0
+				t1.hit()
+				canv.bind('<Button-1>', '')
+				canv.bind('<ButtonRelease-1>', '')
+				canv.itemconfig(screen1, text='Вы уничтожили цель за'+str(bullet)+'выстрелов')
+		canv.update()
+		time.sleep(0.03)
+		g1.targetting()
+		g1.power_up()
+	canv.itemconfig(screen1, text='')
+	canv.delete(gun)
+	root.after(750, new_game)
 
 new_game()
 

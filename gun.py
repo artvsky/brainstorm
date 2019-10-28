@@ -76,22 +76,22 @@ class gun():
 	def fire2_start(self, event):
 		self.f2_on=1
 
-    def fire2_end(self, event):
-        """Выстрел мячом.
-
-        Происходит при отпускании кнопки мыши.
-        Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
-        """
-        global balls, bullet
-        bullet += 1
-        new_ball = ball()
-        new_ball.r += 5
-        self.an = math.atan((event.y-new_ball.y) / (event.x-new_ball.x))
-        new_ball.vx = self.f2_power * math.cos(self.an)
-        new_ball.vy = - self.f2_power * math.sin(self.an)
-        balls += [new_ball]
-        self.f2_on = 0
-        self.f2_power = 10
+	def fire2_end(self, event):
+		"""
+		Выстрел мячом.
+		Происходит при отпускании кнопки мыши.
+		Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
+		"""
+		global balls, bullet
+		bullet+=1
+		new_ball=ball()
+		new_ball.r+=5
+		self.an=math.atan((event.y-new_ball.y)/(event.x-new_ball.x))
+		new_ball.vx=self.f2_power*math.cos(self.an)
+		new_ball.vy=-self.f2_power*math.sin(self.an)
+		balls+=[new_ball]
+		self.f2_on=0
+		self.f2_power=10
 
     def targetting(self, event=0):
         """Прицеливание. Зависит от положения мыши."""

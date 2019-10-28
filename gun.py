@@ -71,7 +71,7 @@ class gun():
 		self.f2_power=10
 		self.f2_on=0
 		self.an=1
-		self.id=canv.create_line(20, 450, 50, 420, width=7) # FIXME: don't know how to set it...
+		self.id=canv.create_line(20, 450, 50, 420, width=7)
 
 	def fire2_start(self, event):
 		self.f2_on=1
@@ -93,27 +93,23 @@ class gun():
 		self.f2_on=0
 		self.f2_power=10
 
-    def targetting(self, event=0):
-        """Прицеливание. Зависит от положения мыши."""
-        if event:
-            self.an = math.atan((event.y-450) / (event.x-20))
-        if self.f2_on:
-            canv.itemconfig(self.id, fill='orange')
-        else:
-            canv.itemconfig(self.id, fill='black')
-        canv.coords(self.id, 20, 450,
-                    20 + max(self.f2_power, 20) * math.cos(self.an),
-                    450 + max(self.f2_power, 20) * math.sin(self.an)
-                    )
+	def targetting(self, event=0):
+		"""Прицеливание. Зависит от положения мыши."""
+		if event:
+			self.an=math.atan((event.y-450)/(event.x-20))
+		if self.f2_on:
+			canv.itemconfig(self.id, fill='orange')
+		else:
+			canv.itemconfig(self.id, fill='black')
+		canv.coords(self.id, 20, 450, 20+max(self.f2_power, 20)*math.cos(self.an), 450+max(self.f2_power, 20)*math.sin(self.an))
 
-    def power_up(self):
-        if self.f2_on:
-            if self.f2_power < 100:
-                self.f2_power += 1
-            canv.itemconfig(self.id, fill='orange')
-        else:
-            canv.itemconfig(self.id, fill='black')
-
+	def power_up(self):
+		if self.f2_on:
+			if self.f2_power<100:
+				self.f2_power+=1
+			canv.itemconfig(self.id, fill='orange')
+		else:
+			canv.itemconfig(self.id, fill='black')
 
 class target():
     self.points = 0

@@ -37,19 +37,32 @@ class ball():
 		Метод описывает перемещение мяча за один кадр перерисовки. То есть, обновляет значения
 		self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
 		и стен по краям окна (размер окна 800х600).
-        """
-		# FIXME
-		self.x+=self.vx
-		self.y-=self.vy
+		"""
+		if self.y<=550:
+			self.x+=self.vx
+			self.y-=self.vy
+			self.vy=self.vy-4.0
+			self.set_coords()
+		else:
+			if self.live<0:
+				balls.pop(balls.index(self))
+				canv.delete(self.id)
+			else:
+				self.live=self.live-1
+		if self.x>780:
+			self.vx=-self.vx*0.8
+			self.x=779
 
 	def hittest(self, obj):
-		"""Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
+		"""
+		Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
 		Args:
 		obj: Обьект, с которым проверяется столкновение.
-		Returns:
-		Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
+		Returns: Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
 		"""
-		# FIXME
+		if ((obj.x-self.x)**2+(obj.y-self.y)**2)<=((obj.r+self.r)**2):
+			return True
+		else:
 			return False
 
 class gun():
@@ -105,7 +118,7 @@ class target():
 		self.id_points=canv.create_text(30, 30, text=self.points, font='28')
 		self.new_target()
 
-    def new_target(self):
+	def new_target(self):
 		"""Инициализация новой цели."""
 		x=self.x=rnd(600, 780)
 		y=self.y=rnd(300, 550)
@@ -130,7 +143,7 @@ def new_game(event=''):
 	global gun, t1, screen1, balls, bullet
 	t1.new_target()
 	bullet=0
-	balls = []
+	balls=[]
 	canv.bind('<Button-1>', g1.fire2_start)
 	canv.bind('<ButtonRelease-1>', g1.fire2_end)
 	canv.bind('<Motion>', g1.targetting)
@@ -141,11 +154,11 @@ def new_game(event=''):
 		for b in balls:
 			b.move()
 			if b.hittest(t1) and t1.live:
-				t1.live = 0
+				t1.live=0
 				t1.hit()
 				canv.bind('<Button-1>', '')
 				canv.bind('<ButtonRelease-1>', '')
-				canv.itemconfig(screen1, text='Вы уничтожили цель за'+str(bullet)+'выстрелов')
+				canv.itemconfig(screen1, text='Вы уничтожили цель за '+str(bullet)+' выстрелов')
 		canv.update()
 		time.sleep(0.03)
 		g1.targetting()
@@ -155,5 +168,4 @@ def new_game(event=''):
 	root.after(750, new_game)
 
 new_game()
-
-mainloop()
+root.mainloop()

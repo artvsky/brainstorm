@@ -139,7 +139,7 @@ class target():
 	def move(self): #инициализация шага
 		if self.live==1:
 			x1, y1, x2, y2=canv.coords(self.id)
-			canv.move(self.id, self.dx, self.dy)
+			canv.move(self.id, self.vx, self.vy)
 			self.x=self.x+self.vx
 			self.y=self.y+self.vy
 			if x2>=int(canv["width"]):
@@ -152,7 +152,8 @@ class target():
 				self.vy=rnd(4,5)
 			root.after(24, self.move)
 
-t1=target()
+t1=target(color_new='red')
+t2=target(color_new='green')
 screen1=canv.create_text(400, 300, text='', font='28')
 g1=gun()
 bullet=0
@@ -161,76 +162,10 @@ total_score=0
 
 def new_game(event=''):
 	global gun, t1, t2, screen1, screen2, balls, bullet_1, bullet_2
-    t1.new_target()
-    t2.new_target()
-    balls = []
-    canv.bind('<Button-1>', g1.fire2_start)
-    canv.bind('<ButtonRelease-1>', g1.fire2_end)
-    canv.bind('<Motion>', g1.targetting)
-    z = 0.03
-    t1.live = 1
-    t2.live = 1
-    while t1.live or balls or t2.live:
-        t1.move()
-        t2.move()
-        for b in balls:
-            b.move()
-            if b.hittest(t1) and t1.live:
-                t1.live = 0
-                t1.hit()
-                if (bullet_1 == 0):
-                    canv.itemconfig(screen1, text='Р¦РµР»СЊ-1 РїРѕРіРёР±Р»Р° СЃСЂР°Р·Сѓ. \
-Р’РїРµС‡Р°С‚Р»СЏРµС‚!')
-                elif ((bullet_1 % 10) == 1) and (bullet_1 != 11):
-                    canv.itemconfig(screen1, text='Р’С‹ СѓРЅРёС‡С‚РѕР¶РёР»Рё С†РµР»СЊ-1 Р·Р° ' \
-                        + str(bullet_1) + ' РІС‹СЃС‚СЂРµР»')
-                elif ((bullet_1 % 10) <= 4) and ((bullet_1 % 10) >= 2) and \
-                        ((bullet_1 <= 12) or (bullet_1 >= 14)):
-                    canv.itemconfig(screen1, text='Р’С‹ СѓРЅРёС‡С‚РѕР¶РёР»Рё С†РµР»СЊ-1 Р·Р° ' \
-                        + str(bullet_1) + ' РІС‹СЃС‚СЂРµР»a')
-                else:
-                    canv.itemconfig(screen1, text='Р’С‹ СѓРЅРёС‡С‚РѕР¶РёР»Рё С†РµР»СЊ-1 Р·Р° ' \
-                        + str(bullet_1) + ' РІС‹СЃС‚СЂРµР»РѕРІ')
-                canv.update()
-                bullet_1 = 0
-
-            if b.hittest(t2) and t2.live:
-                t2.live = 0
-                t2.hit()
-                if (bullet_2 == 0):
-                    canv.itemconfig(screen2, text='Р¦РµР»СЊ-2 РїРѕРіРёР±Р»Р° СЃСЂР°Р·Сѓ. \
-				Р’РїРµС‡Р°С‚Р»СЏРµС‚!')
-                elif ((bullet_2 % 10) == 1) and (bullet_2 != 11):
-                    canv.itemconfig(screen2, text='Р’С‹ СѓРЅРёС‡С‚РѕР¶РёР»Рё С†РµР»СЊ-2 Р·Р° ' \
-                        + str(bullet_2) + ' РІС‹СЃС‚СЂРµР»')
-                elif ((bullet_2 % 10) <= 4) and ((bullet_2 % 10) >= 2) and \
-                        ((bullet_2 < 12) or (bullet_2 > 14)):
-                    canv.itemconfig(screen2, text='Р’С‹ СѓРЅРёС‡С‚РѕР¶РёР»Рё С†РµР»СЊ-2 Р·Р° ' \
-                        + str(bullet_2) + ' РІС‹СЃС‚СЂРµР»a')
-                else:
-                    canv.itemconfig(screen2, text='Р’С‹ СѓРЅРёС‡С‚РѕР¶РёР»Рё С†РµР»СЊ-2 Р·Р° ' \
-                        + str(bullet_2) + ' РІС‹СЃС‚СЂРµР»РѕРІ')
-                canv.update()
-                bullet_2 = 0
-        if (t1.live == 0):
-            t1.new_target()
-            t1.live = 1
-        if (t2.live==0):
-            t2.new_target()
-            t2.live=1
-        canv.update()
-        time.sleep(0.03)
-        g1.targetting()
-        g1.power_up()
-    canv.itemconfig(screen1, text='')
-    canv.itemconfig(screen2, text='')
-    canv.delete(gun)
-    if (t1.live == 0) and (t2.live == 0):
-        root.after(100, new_game())
-
-	'''global gun, t1, screen1, balls, bullet
-	t1.new_target()
-	bullet=0
+	t1.new_target() # создание двух целей
+	t2.new_target()
+	bullet_1=0
+	bullet_2=0
 	balls=[]
 	canv.bind('<Button-1>', g1.fire2_start)
 	canv.bind('<ButtonRelease-1>', g1.fire2_end)
@@ -238,22 +173,53 @@ def new_game(event=''):
 
 	z=0.03
 	t1.live=1
-	while t1.live or balls:
+	t2.live=1
+	while t1.live or balls or t2.live:
+		t1.move()
+		t2.move()
 		for b in balls:
 			b.move()
 			if b.hittest(t1) and t1.live:
 				t1.live=0
 				t1.hit()
-				canv.bind('<Button-1>', '')
-				canv.bind('<ButtonRelease-1>', '')
-				canv.itemconfig(screen1, text='Вы уничтожили цель за '+str(bullet)+' выстрелов')
+				if (bullet_1==0):
+					canv.itemconfig(screen1, text='Цель-1 погибла сразу. Капец!')
+				elif ((bullet_1%10)==1) and (bullet_1!=11):
+					canv.itemconfig(screen1, text='Вы уничтожили цель-1 за ' + str(bullet_1) + ' выстрел')
+				elif ((bullet_1%10)<=4) and ((bullet_1%10)>=2) and ((bullet_1 <= 12) or (bullet_1 >= 14)):
+					canv.itemconfig(screen1, text='Вы уничтожили цель-1 за ' + str(bullet_1) + ' выстрелa')
+				else:
+					canv.itemconfig(screen1, text='Вы уничтожили цель-1 за ' + str(bullet_1) + ' выстрелов')
+				canv.update()
+				bullet_1=0
+			if b.hittest(t2) and t2.live:
+				t2.live=0
+				t2.hit()
+				if (bullet_2==0):
+					canv.itemconfig(screen2, text='Цель-2 погибла сразу. Капец!')
+				elif ((bullet_2%10)==1) and (bullet_2!=11):
+					canv.itemconfig(screen2, text='Вы уничтожили цель-2 за ' + str(bullet_2) + ' выстрел')
+				elif ((bullet_2%10)<= 4) and ((bullet_2%10)>=2) and ((bullet_2<12) or (bullet_2>14)):
+					canv.itemconfig(screen2, text='Вы уничтожили цель-2 за ' + str(bullet_2) + ' выстрелa')
+				else:
+					canv.itemconfig(screen2, text='Вы уничтожили цель-2 за ' + str(bullet_2) + ' выстрелов')
+				canv.update()
+				bullet_2=0
+		if (t1.live==0):
+			t1.new_target()
+			t1.live=1
+		if (t2.live==0):
+			t2.new_target()
+			t2.live=1
 		canv.update()
 		time.sleep(0.03)
 		g1.targetting()
 		g1.power_up()
 	canv.itemconfig(screen1, text='')
+	canv.itemconfig(screen2, text='')
 	canv.delete(gun)
-	root.after(750, new_game)'''
+	if (t1.live==0) and (t2.live==0):
+		root.after(100, new_game())
 
 new_game()
 root.mainloop()

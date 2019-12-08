@@ -50,7 +50,7 @@ class Shell(): # определяет класс снарядов
 		if self.y<=600:
 			self.x+=self.vx
 			self.y-=self.vy
-			self.vy=self.vy-4.0
+			self.vy=self.vy-3.1415
 			self.set_coords()
 		else:
 			if self.live<0:
@@ -61,8 +61,13 @@ class Shell(): # определяет класс снарядов
 		if self.x>800:
 			self.vx=-self.vx*0.8
 			self.x=799
+		if self.x<0:
+			self.vx=-self.vx*0.8
+			self.x=1
 		elif self.y>600:
-			canv.delete(self.id)
+			self.vy=-self.vy*0.8
+			self.y=599
+			#canv.delete(self.id)
 
 	def hittest(self, obj):
 		"""
@@ -137,17 +142,17 @@ class Target():
 		self.live=1 # атрибут, отвечающий за состояние цели (1 - жива, 0 - мертва)
 		self.id=canv.create_oval(0, 0, 0, 0) # привязывает цель к холсту
 		self.id_points=canv.create_text(30, 30, text=self.points, font='28')
-		self.vx=rnd(-2, 2) # начальная скорость цели по горизонтали
-		self.vy=rnd(-2, 2) # начальная скорость цели по вертикали
 		self.color=color_new # ввод цвета
 		self.new_target() # создаёт новую цель
 		self.time=0 # колебание цели (параметр)
 		self.hit_the_target=False # есть попадание или нет
 
 	def new_target(self): # инициализация новой цели
-		x=self.x=rnd(600, 780) # координата цели по горизонтали
-		y=self.y=rnd(300, 550) # координата цели по вертикали
-		r=self.r=rnd(2, 50) # радиус цели
+		x=self.x=rnd(100, 700) # координата цели по горизонтали
+		y=self.y=rnd(100, 500) # координата цели по вертикали
+		r=self.r=rnd(1, 50) # радиус цели
+		vx=self.vx=rnd(-4, 4) # начальная скорость цели по горизонтали
+		vy=self.vy=rnd(-4, 4) # начальная скорость цели по вертикали
 		color=self.color # выбор цвета цели
 		canv.coords(self.id, x-r, y-r, x+r, y+r) # положение новой цели
 		canv.itemconfig(self.id, fill=color) # добавляет цвет новой цели
@@ -164,18 +169,21 @@ class Target():
 
 	def move(self): #инициализация шага
 		if self.live==1: # если цель жива
-			x1, y1, x2, y2=canv.coords(self.id)
 			canv.move(self.id, self.vx, self.vy)
 			self.x=self.x+self.vx
 			self.y=self.y+self.vy
-			if x2>=int(canv["width"]):
-				self.vx=rnd(3,5)
-			if x1<=0:
-				self.vx=rnd(4,6)    
-			if y2>=int(canv["height"]):
-				self.vy=rnd(3,4)
-			if y1<=0:
-				self.vy=rnd(4,5)
+			if self.x>=800:
+				self.vx=-self.vx*0.6
+				self.x=799
+			if self.x<=0:
+				self.vx=-self.vx*0.6
+				self.x=1
+			if self.y>=600:
+				self.vy=-self.vy*0.6
+				self.y=599
+			if self.y<=0:
+				self.vy=-self.vy*0.6
+				self.y=1
 			root.after(24, self.move)
 
 t1=Target(color_new='red')

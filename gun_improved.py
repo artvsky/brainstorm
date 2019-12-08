@@ -6,7 +6,7 @@ import time
 # создаёт холст
 root=tk.Tk()
 fr=tk.Frame(root)
-root.geometry('1024x768')
+root.geometry('800x600')
 canv=tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
 
@@ -47,7 +47,7 @@ class Shell(): # определяет класс снарядов
 		То есть, обновляет значения self.x и self.y с учетом скоростей self.vx и self.vy, гравитации и стен по краям окна
 		Убивает снаряд, если тот вылетает за нижнюю или правую границу поля
 		"""
-		if self.y<=768:
+		if self.y<=600:
 			self.x+=self.vx
 			self.y-=self.vy
 			self.vy=self.vy-4.0
@@ -58,10 +58,10 @@ class Shell(): # определяет класс снарядов
 				canv.delete(self.id)
 			else:
 				self.live=self.live-1
-		if self.x>1024:
+		if self.x>800:
 			self.vx=-self.vx*0.8
-			self.x=1023
-		elif self.y>768:
+			self.x=799
+		elif self.y>600:
 			canv.delete(self.id)
 
 	def hittest(self, obj):

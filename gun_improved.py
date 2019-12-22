@@ -27,7 +27,7 @@ class Shell(): # определяет класс снарядов
 		id - фигура из холста
 		life - время жизни
 		"""
-		global colors
+		global colors_of_rainbow
 		self.x=x
 		self.y=y
 		self.r=10
@@ -35,7 +35,7 @@ class Shell(): # определяет класс снарядов
 		self.vy=0
 		self.color=choice(colors_of_rainbow)
 		self.id=canv.create_oval(self.x-self.r, self.y-self.r, self.x+self.r, self.y+self.r, fill=self.color)
-		self.live=30
+		self.live=42
 
 	def set_coords(self): # обновляет координаты снаряда
 		canv.coords(self.id, self.x-self.r, self.y-self.r, self.x+self.r, self.y+self.r)
@@ -52,12 +52,11 @@ class Shell(): # определяет класс снарядов
 			self.y-=self.vy
 			self.vy=self.vy-3.1415
 			self.set_coords()
+		if self.live<0:
+			balls.pop(balls.index(self))
+			canv.delete(self.id)
 		else:
-			if self.live<0:
-				balls.pop(balls.index(self))
-				canv.delete(self.id)
-			else:
-				self.live=self.live-1
+			self.live=self.live-1
 		if self.x>800:
 			self.vx=-self.vx*0.8
 			self.x=799
@@ -67,7 +66,6 @@ class Shell(): # определяет класс снарядов
 		elif self.y>600:
 			self.vy=-self.vy*0.8
 			self.y=599
-			#canv.delete(self.id)
 
 	def hittest(self, obj):
 		"""
@@ -82,6 +80,7 @@ class Shell(): # определяет класс снарядов
 			return False
 
 class Gun(): # определяет класс пушек
+
 	def __init__(self):
 		"""
 		Инициализация пушки
@@ -125,7 +124,8 @@ class Gun(): # определяет класс пушек
 			canv.itemconfig(self.id, fill='orange')
 		else:
 			canv.itemconfig(self.id, fill='black')
-		canv.coords(self.id, 20, 450, 20+max(self.f2_power, 20)*math.cos(self.an), 450+max(self.f2_power, 20)*math.sin(self.an))
+		canv.coords(self.id, 20, 450, 20+max(self.f2_power, 20)*math.cos(self.an),
+				450+max(self.f2_power, 20)*math.sin(self.an))
 
 	def power_up(self):
 		if self.f2_on:
@@ -138,10 +138,9 @@ class Gun(): # определяет класс пушек
 class Target():
 
 	def __init__(self, color_new): # инициализация цели
-		self.points=0 # points - баллов получено за убийство цели
 		self.live=1 # атрибут, отвечающий за состояние цели (1 - жива, 0 - мертва)
 		self.id=canv.create_oval(0, 0, 0, 0) # привязывает цель к холсту
-		self.id_points=canv.create_text(30, 30, text=self.points, font='28')
+		self.id_points=canv.create_text(30, 30, text='', font='28')
 		self.color=color_new # ввод цвета
 		self.new_target() # создаёт новую цель
 		self.time=0 # колебание цели (параметр)
@@ -150,9 +149,9 @@ class Target():
 	def new_target(self): # инициализация новой цели
 		x=self.x=rnd(100, 700) # координата цели по горизонтали
 		y=self.y=rnd(100, 500) # координата цели по вертикали
-		r=self.r=rnd(1, 50) # радиус цели
-		vx=self.vx=rnd(-4, 4) # начальная скорость цели по горизонтали
-		vy=self.vy=rnd(-4, 4) # начальная скорость цели по вертикали
+		r=self.r=rnd(5, 50) # радиус цели
+		vx=self.vx=rnd(-100, 100)/200 # начальная скорость цели по горизонтали
+		vy=self.vy=rnd(-100, 100)/200 # начальная скорость цели по вертикали
 		color=self.color # выбор цвета цели
 		canv.coords(self.id, x-r, y-r, x+r, y+r) # положение новой цели
 		canv.itemconfig(self.id, fill=color) # добавляет цвет новой цели
@@ -186,8 +185,8 @@ class Target():
 				self.y=1
 			root.after(24, self.move)
 
-t1=Target(color_new='red')
-t2=Target(color_new='cyan')
+t1=Target(color_new='#000000')
+t2=Target(color_new='#808080')
 screen1=canv.create_text(400, 300, text='', font='28')
 screen2=canv.create_text(400, 300, text='', font='28')
 g=Gun()
@@ -230,7 +229,7 @@ def new_game(event=''): # функция класса события
 				bullet_1=0
 			if b.hittest(t2) and t2.live: # если происходит столкновение с живой целью-2 - убивает её
 				t2.live=0
-				t2.hit()
+				t1.hit() # увеличивает очки на единицу
 				if (bullet_2==0): # сравнивает
 					canv.itemconfig(screen2, text='Цель-2 погибла сразу. Капец!')
 				elif ((bullet_2%10)==1) and (bullet_2!=11):
@@ -241,18 +240,18 @@ def new_game(event=''): # функция класса события
 					canv.itemconfig(screen2, text='Вы уничтожили цель-2 за ' + str(bullet_2) + ' выстрелов')
 				canv.update()
 				bullet_2=0
-		if (t1.live==0): # если цель-1 метрва, запускает создание новой цели
+		if (t1.live==0): # если цель-1 мертва, запускает создание новой цели
 			t1.new_target()
 			t1.live=1
-		if (t2.live==0): # если цель-2 метрва, запускает создание новой цели
+		if (t2.live==0): # если цель-2 мертва, запускает создание новой цели
 			t2.new_target()
 			t2.live=1
 		canv.update()
 		time.sleep(0.03)
 		g.targetting()
 		g.power_up()
-	canv.itemconfig(screen1, text='')
-	canv.itemconfig(screen2, text='')
+		canv.itemconfig(screen1, text='')
+		canv.itemconfig(screen2, text='')
 	canv.delete(Gun)
 	if (t1.live==0) and (t2.live==0): # если обе цели мертвы, перезапускает игру
 		root.after(100, new_game())
